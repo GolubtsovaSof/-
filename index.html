@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Наша свадьба</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+        
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: #cfc5b6;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Прелоадер */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #cfc5b6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        
+        .preloader-hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .preloader-content {
+            text-align: center;
+            color: #2d2a24;
+        }
+        
+        .preloader-heart {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+        
+        .preloader-text {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2rem;
+            letter-spacing: 0.05em;
+            color: #3b5e4b;
+            margin-bottom: 1.5rem;
+        }
+        
+        .preloader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(59, 94, 75, 0.2);
+            border-top-color: #3b5e4b;
+            border-radius: 50%;
+            margin: 0 auto;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            35% { transform: scale(1); }
+            45% { transform: scale(1.05); }
+            55% { transform: scale(1); }
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+        
+        .container-visible {
+            opacity: 1;
+        }
+        
+        .photo-section {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .couple-photo {
+            width: 100%;
+            height: 100%;
+            background-image: url('./couple-photo.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .paper-section {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30vh;
+            min-height: 180px;
+            background-image: url('./paper-texture.png');
+            background-size: cover;
+            background-position: center top;
+            background-repeat: repeat;
+            z-index: 2;
+            pointer-events: none;
+        }
+        
+        .envelope-container {
+            position: absolute;
+            bottom: 2vh;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 280px;
+            height: 300px;
+            cursor: pointer;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: gentle-move 8s ease-in-out infinite;
+        }
+        
+        .envelope {
+            width: 100%;
+            height: 100%;
+            background-image: url('./envelope.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: drop-shadow(0 6px 20px rgba(0,0,0,0.25));
+        }
+        
+        .envelope-instruction {
+            margin-top: 8px;
+            color: #2c1810;
+            font-family: 'Great Vibes', cursive;
+            font-size: 18px;
+            font-weight: 500;
+            text-align: center;
+            letter-spacing: 0.8px;
+            opacity: 0.95;
+            transition: all 0.4s ease;
+            position: relative;
+            padding-bottom: 8px;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.3);
+        }
+        
+        .envelope-instruction::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 30%;
+            width: 40%;
+            height: 2px;
+            background: #2c1810;
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+        
+        .envelope-container:hover .envelope-instruction {
+            opacity: 1;
+            letter-spacing: 1px;
+            color: #1a0f0a;
+        }
+        
+        .envelope-container:hover .envelope-instruction::after {
+            transform: scaleX(1);
+        }
+        
+        @keyframes gentle-move {
+            0%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            50% {
+                transform: translateX(-50%) translateY(-6px);
+            }
+        }
+        
+        .envelope-container:active {
+            transform: translateX(-50%) scale(1.02);
+            transition: transform 0.2s ease;
+        }
+        
+        .envelope-container:active .envelope {
+            filter: drop-shadow(0 8px 25px rgba(0,0,0,0.3));
+        }
+        
+        /* Десктопная страница с QR-кодом - АБСОЛЮТНЫЙ ЦЕНТР */
+        .desktop-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #cfc5b6;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        
+        .desktop-page.active {
+            display: flex;
+        }
+        
+        .qr-container {
+            max-width: 500px;
+            width: 90%;
+            background: rgba(255, 250, 240, 0.4);
+            backdrop-filter: blur(8px);
+            padding: 2.5rem 2rem;
+            border-radius: 60px 60px 60px 60px;
+            border: 1px solid rgba(200, 180, 160, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 0 auto;
+        }
+        
+        .qr-title {
+            font-family: 'Great Vibes', cursive;
+            font-size: clamp(2.5rem, 7vw, 4rem);
+            color: #3b5e4b;
+            margin-bottom: 0.3rem;
+            letter-spacing: 0.05em;
+        }
+        
+        .qr-subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+            color: #2d2a24;
+            margin-bottom: 2rem;
+            font-style: italic;
+            border-bottom: 1px solid #b8aa99;
+            display: inline-block;
+            padding-bottom: 0.3rem;
+        }
+        
+        .qr-image {
+            width: 220px;
+            height: 220px;
+            margin: 1.5rem auto;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            border: 2px solid rgba(255, 255, 240, 0.6);
+        }
+        
+        .qr-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .qr-note {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            color: #5b4e3f;
+            margin: 1.5rem 0 1rem;
+            line-height: 1.5;
+        }
+        
+        .qr-link {
+            display: inline-block;
+            margin-top: 0.5rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            color: #3b5e4b;
+            text-decoration: none;
+            border-bottom: 1px dashed #b8aa99;
+            padding-bottom: 0.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .qr-link:hover {
+            color: #1a2e24;
+            border-bottom-color: #3b5e4b;
+        }
+    </style>
+</head>
+<body>
+    <!-- Прелоадер -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-content">
+            <div class="preloader-heart">❤️</div>
+            <div class="preloader-text">Готовим сюрприз...</div>
+            <div class="preloader-spinner"></div>
+        </div>
+    </div>
+
+    <!-- Основной контент (индекс) -->
+    <div class="container" id="mainContent">
+        <div class="photo-section">
+            <div class="couple-photo"></div>
+        </div>
+        
+        <div class="paper-section"></div>
+        
+        <div class="envelope-container" id="envelope">
+            <div class="envelope"></div>
+            <div class="envelope-instruction">Нажмите, чтобы открыть приглашение</div>
+        </div>
+    </div>
+
+    <!-- Десктопная страница с QR-кодом - АБСОЛЮТНО ПО ЦЕНТРУ -->
+    <div class="desktop-page" id="desktopPage">
+        <div class="qr-container">
+            <div class="qr-title">Александр & Софья</div>
+            <div class="qr-subtitle">8 июля 2026</div>
+            
+            <div class="qr-image">
+                <img src="./QR.png" alt="QR-код">
+            </div>
+            
+            <div class="qr-note">
+                Наведите камеру телефона на QR-код и увидите сюрприз!<br>
+            </div>
+            
+        </div>
+    </div>
+    
+    <script>
+        // Определяем мобильное устройство
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+        }
+
+        // Показываем прелоадер, ждём загрузки всех ресурсов
+        window.addEventListener('load', function() {
+            // Задержка для красоты (минимум 1.5 секунды)
+            setTimeout(function() {
+                const preloader = document.getElementById('preloader');
+                preloader.classList.add('preloader-hidden');
+                
+                // Показываем контент
+                if (isMobile()) {
+                    // Мобильное устройство - показываем индекс
+                    document.getElementById('mainContent').classList.add('container-visible');
+                } else {
+                    // Десктоп - показываем страницу с QR
+                    document.getElementById('desktopPage').classList.add('active');
+                }
+            }, 1500);
+        });
+
+        // Переход на свадебную страницу по клику на конверт
+        document.getElementById('envelope').addEventListener('click', function() {
+            this.style.transform = 'translateX(-50%) scale(1.05)';
+            this.style.transition = 'transform 0.3s ease';
+            
+            setTimeout(function() {
+                window.location.href = 'wedding-page.html';
+            }, 300);
+        });
+        
+        const envelope = document.getElementById('envelope');
+        const instruction = document.querySelector('.envelope-instruction');
+        
+        envelope.addEventListener('mouseenter', function() {
+            instruction.style.opacity = '1';
+            instruction.style.letterSpacing = '1px';
+        });
+        
+        envelope.addEventListener('mouseleave', function() {
+            instruction.style.opacity = '0.95';
+            instruction.style.letterSpacing = '0.8px';
+        });
+    </script>
+</body>
+</html>
