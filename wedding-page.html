@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Александр и Софья · Приглашение</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -14,6 +16,17 @@
 
         body {
             background: #cfc5b6;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* ДОБАВЛЕНО: плавное появление изображений */
+        .photo-img, .paper-img, .event-photo, .rings-image {
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+        }
+        
+        .photo-img.loaded, .paper-img.loaded, .event-photo.loaded, .rings-image.loaded {
+            opacity: 1;
         }
 
         .wedding-scroll {
@@ -61,7 +74,6 @@
             position: relative;
         }
 
-        /* Контейнер для текста поверх первого фото */
         .hero-text {
             position: absolute;
             top: 0;
@@ -106,29 +118,25 @@
             margin-bottom: 14vh;
         }
 
-        /* ОБЩИЙ КОНТЕЙНЕР ДЛЯ ПЕРВОЙ ПАРЫ БУМАЖНЫХ СЕКЦИЙ */
         .papers-wrapper {
             position: relative;
             width: 100%;
+            padding-top: 1vh;
         }
 
-        /* ОБЩИЙ КОНТЕЙНЕР ДЛЯ ВТОРОЙ ПАРЫ БУМАЖНЫХ СЕКЦИЙ */
         .papers-wrapper-2 {
             position: relative;
             width: 100%;
         }
 
-        /* УМЕНЬШАЕМ ВЫСОТУ ПЕРЕВЕРНУТОЙ БУМАГИ ТОЛЬКО В ПЕРВОЙ ПАРЕ */
         .papers-wrapper .paper-section.inverted {
-            height: 60vh;
+            height: 50vh;
         }
 
-        /* ВО ВТОРОЙ ПАРЕ ВСЕ ПОЛНОСТЬЮ КАК В ПЕРВОЙ, НО БЕЗ УМЕНЬШЕНИЯ ВЫСОТЫ */
         .papers-wrapper-2 .paper-section.inverted {
-            height: 100vh;
+            height: 130vh;
         }
 
-        /* КОНТЕЙНЕР ДЛЯ ТЕКСТА И КАЛЕНДАРЯ ПОВЕРХ ПЕРВЫХ ДВУХ БУМАГ */
         .papers-content {
             position: absolute;
             top: 0;
@@ -178,7 +186,6 @@
             margin-bottom: 1rem;
         }
 
-        /* Календарь с Great Vibes */
         .handmade-calendar {
             margin-top: 2rem;
             width: fit-content;
@@ -264,7 +271,6 @@
             transform: rotate(-3deg);
         }
 
-        /* Кольца после календаря */
         .rings-image {
             margin-top: 2rem;
             width: 100px;
@@ -276,7 +282,6 @@
             filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
         }
 
-        /* КОНТЕЙНЕР ДЛЯ ТЕКСТА ПОВЕРХ ВТОРОЙ ПАРЫ БУМАГ */
         .papers-content-2 {
             position: absolute;
             top: 0;
@@ -292,12 +297,10 @@
             pointer-events: none;
         }
 
-        /* РАЗРЕШАЕМ КЛИКИ НА ССЫЛКИ */
         .event-info, .form-soft-box, .guest-link, .telegram-box, .telegram-link, .farewell-box {
             pointer-events: auto;
         }
 
-        /* СТИЛИ ДЛЯ ИНФОРМАЦИИ О МЕРОПРИЯТИИ */
         .event-info {
             max-width: 650px;
             width: 90%;
@@ -352,12 +355,10 @@
             font-style: italic;
         }
 
-        /* ФОТО ПОД ЭТАПАМИ */
         .event-photo {
             width: 100%;
-            max-width: 280px;
+            max-width: 150px;
             height: auto;
-            border-radius: 12px;
             margin: 0.8rem auto 1.2rem;
             display: block;
             filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
@@ -365,7 +366,6 @@
             pointer-events: none;
         }
 
-        /* СТРЕЛОЧКИ */
         .arrow {
             font-size: 2rem;
             line-height: 1;
@@ -377,7 +377,6 @@
             pointer-events: none;
         }
 
-        /* ССЫЛКА НА АНКЕТУ */
         .form-soft-box {
             margin-top: 2.5rem;
             padding: 1.5rem 1.8rem;
@@ -420,7 +419,6 @@
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
         }
 
-        /* ССЫЛКА НА TELEGRAM */
         .telegram-box {
             margin-top: 2rem;
             padding: 1.5rem 1.8rem;
@@ -466,42 +464,6 @@
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .telegram-icon {
-            font-size: 1.8rem;
-            line-height: 1;
-        }
-
-        /* КРАСИВОЕ "ДО ВСТРЕЧИ!" */
-        .farewell-box {
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        .farewell {
-            font-family: 'Great Vibes', cursive;
-            font-size: clamp(3rem, 8vw, 4.5rem);
-            color: #3b5e4b;
-            text-shadow: 2px 2px 8px rgba(255, 255, 240, 0.8);
-            letter-spacing: 0.05em;
-            line-height: 1.2;
-            position: relative;
-            display: inline-block;
-            padding: 0 1rem;
-        }
-
-        .farewell::before,
-        .farewell::after {
-            content: '✧';
-            display: inline-block;
-            font-size: 2rem;
-            color: #b8aa99;
-            margin: 0 0.8rem;
-            opacity: 0.6;
-            transform: scale(1.2);
-        }
-
-        /* ФУТЕР */
         .footer-section {
             width: 100%;
             height: 30vh;
@@ -516,7 +478,7 @@
             padding: 2rem;
             position: relative;
             z-index: 5;
-            margin-top: -12vh;
+            margin-top: -15vh;
         }
 
         .footer-names {
@@ -543,7 +505,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ПЕРВАЯ ПАРА - нахлесты как в оригинале */
         .papers-wrapper .paper-section {
             margin-top: -20vh;
             z-index: 10;
@@ -554,7 +515,6 @@
             z-index: 20;
         }
 
-        /* ВТОРАЯ ПАРА - ТОЧНО ТАКИЕ ЖЕ НАХЛЕСТЫ */
         .papers-wrapper-2 {
             margin-top: -20vh;
             z-index: 13;
@@ -569,184 +529,44 @@
             position: relative;
         }
 
-        /* ========== АДАПТИВНОСТЬ ========== */
-        @media (max-width: 700px) {
-            .section {
-                height: 100vh;
-            }
-            
-            .papers-content {
-                padding-top: 1vh;
-            }
-            
-            .content-card {
-                padding: 1.5rem 1rem 2rem;
-            }
-            
-            .greeting-title {
-                font-size: clamp(1.5rem, 5vw, 2.2rem);
-                margin-bottom: 1rem;
-            }
-            
-            .greeting-text {
-                font-size: clamp(1.1rem, 3.5vw, 1.4rem);
-            }
-            
-            .handmade-calendar {
-                margin-top: 1rem;
-                padding: 0.5rem 0.8rem;
-            }
-            
-            .calendar-month {
-                font-size: 1.5rem;
-                margin-bottom: 0.5rem;
-            }
-            
-            .calendar-grid {
-                grid-template-columns: repeat(7, 1.5rem);
-                gap: 0.1rem;
-                font-size: 1rem;
-            }
-            
-            .calendar-cell {
-                width: 1.5rem;
-                height: 1.5rem;
-                font-size: 1.1rem;
-            }
-            
-            .handdrawn-circle {
-                width: 1.8rem;
-                height: 1.8rem;
-            }
-            
-            .rings-image {
-                width: 70px;
-                margin-top: 1rem;
-            }
-            
-            .papers-content-2 {
-                padding-top: 12vh;
-            }
-            
-            .event-info {
-                padding: 1rem 1rem 1.5rem;
-            }
-            
-            .event-title {
-                font-size: clamp(1.4rem, 4.5vw, 1.8rem);
-            }
-            
-            .event-detail {
-                font-size: clamp(1.1rem, 3vw, 1.4rem);
-            }
-            
-            .event-location {
-                font-size: clamp(0.95rem, 2.5vw, 1.2rem);
-            }
-            
-            .event-note {
-                font-size: clamp(0.9rem, 2.2vw, 1.1rem);
-                margin-bottom: 0.5rem;
-            }
-            
-            .event-photo {
-                max-width: 200px;
-                margin: 0.5rem auto 1rem;
-            }
-            
-            .arrow {
-                font-size: 1.5rem;
-                margin: 0.1rem 0 0.3rem;
-            }
-            
-            .form-soft-box, .telegram-box {
-                margin-top: 1.5rem;
-                padding: 1rem 1.2rem;
-            }
-            
-            .form-text, .telegram-text {
-                font-size: clamp(0.9rem, 2.5vw, 1.1rem);
-            }
-            
-            .guest-link, .telegram-link {
-                font-size: clamp(1.3rem, 3.5vw, 1.6rem);
-                padding: 0.2rem 1.2rem;
-            }
-            
-            .farewell-box {
-                margin-top: 1.5rem;
-            }
-            
-            .farewell {
-                font-size: clamp(2.2rem, 6vw, 3rem);
-            }
-            
-            .farewell::before,
-            .farewell::after {
-                font-size: 1.5rem;
-                margin: 0 0.4rem;
-            }
-            
-            .footer-names {
-                font-size: 2rem;
-                margin-top: 2rem;
-            }
-            
-            .footer-year {
-                font-size: 1.2rem;
-            }
+    @media (max-height: 930px) {
+        .papers-wrapper-2 .paper-section.inverted {
+            height: 140vh;
         }
+        .papers-wrapper .paper-section.inverted {
+            height: 60vh;
+        }
+    }
+    
+    @media (max-height: 830px) {
+        .papers-wrapper-2 .paper-section.inverted {
+            height: 170vh;
+        }
+        .papers-wrapper .paper-section.inverted {
+            height: 80vh;
+        }
+    }
+    
+    @media (max-height: 730px) {
+        .papers-wrapper-2 .paper-section.inverted {
+            height: 200vh;
+        }
+        .papers-wrapper .paper-section.inverted {
+            height: 100vh;
+        }
+    }
 
-        @media (max-width: 480px) {
-            .papers-content-2 {
-                padding-top: 19vh;
-            }
-            
-            .calendar-grid {
-                grid-template-columns: repeat(7, 1.3rem);
-            }
-            
-            .calendar-cell {
-                width: 1.3rem;
-                height: 1.3rem;
-                font-size: 1rem;
-            }
-            
-            .event-photo {
-                max-width: 160px;
-            }
-            
-            .farewell::before,
-            .farewell::after {
-                display: none;
-            }
+    @media (max-height: 630px) {
+        .papers-wrapper-2 .paper-section.inverted {
+            height: 230vh;
         }
+        .papers-wrapper .paper-section.inverted {
+            height: 130vh;
+        }
+    }
 
-        @media (max-height: 600px) and (orientation: landscape) {
-            .papers-content {
-                padding-top: 0.5vh;
-            }
-            
-            .papers-content-2 {
-                padding-top: 3vh;
-            }
-            
-            .content-card, .event-info {
-                padding: 1rem;
-            }
-            
-            .handmade-calendar {
-                margin-top: 0.5rem;
-            }
-            
-            .event-photo {
-                max-width: 120px;
-            }
-            
-            .farewell-box {
-                margin-top: 0.5rem;
-            }
-        }
+
+
     </style>
 </head>
 <body>
@@ -762,17 +582,12 @@
 
         <!-- ПЕРВАЯ ПАРА БУМАЖНЫХ СЕКЦИЙ -->
         <div class="papers-wrapper">
-            <!-- 2. БУМАГА (обычная) -->
             <div class="section paper-section">
                 <img src="./paper-texture2.png" alt="текстура бумаги" class="paper-img">
             </div>
-
-            <!-- 3. БУМАГА перевернутая (укороченная) -->
             <div class="section paper-section inverted">
                 <img src="./paper-texture2.png" alt="текстура бумаги перевернутая" class="paper-img">
             </div>
-
-            <!-- ТЕКСТ И КАЛЕНДАРЬ ПОВЕРХ ПЕРВЫХ ДВУХ БУМАГ -->
             <div class="papers-content">
                 <div class="content-card">
                     <div class="greeting-title">Дорогие наши родные и близкие!</div>
@@ -784,7 +599,6 @@
                         <div class="calendar-month">Июль 2026</div>
                         <div class="calendar-grid">
                             <span class="weekday">пн</span><span class="weekday">вт</span><span class="weekday">ср</span><span class="weekday">чт</span><span class="weekday">пт</span><span class="weekday">сб</span><span class="weekday">вс</span>
-                            
                             <span></span><span></span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
                             <span>6</span><span>7</span>
                             <div class="calendar-cell highlight">8<div class="handdrawn-circle"></div></div>
@@ -794,8 +608,6 @@
                             <span>27</span><span>28</span><span>29</span><span>30</span><span>31</span>
                         </div>
                     </div>
-
-                    <!-- КАРТИНКА С КОЛЬЦАМИ -->
                     <img src="./rings.png" alt="кольца" class="rings-image">
                 </div>
             </div>
@@ -806,22 +618,16 @@
             <img src="./couple-photo2.jpg" alt="Александр и Софья" class="photo-img">
         </div>
 
-        <!-- ВТОРАЯ ПАРА БУМАЖНЫХ СЕКЦИЙ (С ИНФОРМАЦИЕЙ О МЕРОПРИЯТИИ) -->
+        <!-- ВТОРАЯ ПАРА БУМАЖНЫХ СЕКЦИЙ -->
         <div class="papers-wrapper-2">
-            <!-- 5. БУМАГА (обычная) -->
             <div class="section paper-section">
                 <img src="./paper-texture2.png" alt="текстура бумаги" class="paper-img">
             </div>
-
-            <!-- 6. БУМАГА перевернутая -->
             <div class="section paper-section inverted">
                 <img src="./paper-texture2.png" alt="текстура бумаги перевернутая" class="paper-img">
             </div>
-
-            <!-- ИНФОРМАЦИЯ О МЕРОПРИЯТИИ С ФОТО -->
             <div class="papers-content-2">
                 <div class="event-info">
-                    <!-- Регистрация -->
                     <div class="event-title">Торжественная регистрация брака</div>
                     <div class="event-detail"><strong>15:00</strong></div>
                     <div class="event-location">ЗАГС Дзержинского, 197 · Новороссийск</div>
@@ -830,13 +636,18 @@
                     
                     <div class="arrow">↓</div>
                     
-                    <!-- Банкет -->
                     <div class="event-title" style="margin-top: 0.5rem;">Банкет</div>
                     <div class="event-detail">ресторан <strong>Pomido'r</strong></div>
                     <div class="event-location">просп. Ленина, 80 · Новороссийск</div>
                     <img src="./cafe.jpg" alt="Ресторан" class="event-photo">
 
-                    <!-- ССЫЛКА НА АНКЕТУ -->
+                    <div class="arrow">↓</div>
+                    <div class="event-title" style="margin-top: 0.5rem;">Загородный дом</div>
+                    <div class="event-detail"><strong>10 июля, с 15:00</strong></div>
+                    <div class="event-location">Загородный дом Новороссийск · СТ Фрегат 15</div>
+                    <div class="event-note">Баня, бассейн, чан, ароматные шашлыки и душевные посиделки. Ждём вас в уютной компании!</div>
+                    <img src="./house.jpg" alt="Загородный дом" class="event-photo">
+
                     <div class="form-soft-box">
                         <div class="form-text">Пожалуйста, ответьте на несколько вопросов</div>
                         <a href="https://forms.gle/pJgY9HvrM5SbmETm7" target="_blank" class="guest-link">
@@ -844,7 +655,6 @@
                         </a>
                     </div>
 
-                    <!-- ССЫЛКА НА TELEGRAM -->
                     <div class="telegram-box">
                         <div class="telegram-text">
                             Можете заранее вступить в группу Telegram для наших гостей. 
@@ -854,15 +664,10 @@
                             <span>Telegram-группа</span>
                         </a>
                     </div>
-
-                    <!-- КРАСИВОЕ "ДО ВСТРЕЧИ!" -->
-                    <div class="farewell-box">
-                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- 7. ФУТЕР -->
         <div class="footer-section">
             <div class="footer-names">До встречи!</div>
             <div class="footer-year">8 июля 2026</div>
@@ -872,5 +677,53 @@
     <audio autoplay loop>
         <source src="./wedding-music.mp3" type="audio/mpeg">
     </audio>
+    
+    <script>
+        // Плавное появление изображений после полной загрузки (без изменения разметки)
+        (function() {
+            // Находим все изображения на странице
+            const images = document.querySelectorAll('.photo-img, .paper-img, .event-photo, .rings-image');
+            
+            // Функция, которая помечает изображение как загруженное
+            function imageLoaded(img) {
+                if (img.classList.contains('loaded')) return;
+                img.classList.add('loaded');
+            }
+            
+            // Проверяем каждое изображение
+            images.forEach(img => {
+                // Если изображение уже загружено (из кэша)
+                if (img.complete && img.naturalHeight !== 0) {
+                    imageLoaded(img);
+                } else {
+                    // Ждем загрузки
+                    img.addEventListener('load', () => imageLoaded(img));
+                    img.addEventListener('error', () => {
+                        // Если ошибка, всё равно показываем
+                        img.classList.add('loaded');
+                    });
+                }
+            });
+            
+            // Аудио: пытаемся запустить мгновенно
+            const audio = document.querySelector('audio');
+            if (audio) {
+                audio.volume = 0.8;
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(() => {
+                        // Если автозапуск заблокирован, запускаем по первому клику
+                        const startAudio = () => {
+                            audio.play().catch(e => console.log('Аудио не запущено'));
+                            document.removeEventListener('click', startAudio);
+                            document.removeEventListener('touchstart', startAudio);
+                        };
+                        document.addEventListener('click', startAudio);
+                        document.addEventListener('touchstart', startAudio);
+                    });
+                }
+            }
+        })();
+    </script>
 </body>
 </html>

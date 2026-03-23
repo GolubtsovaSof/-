@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Наша свадьба</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -18,7 +20,7 @@
         }
         
         body {
-            font-family: 'Cormorant Garamond', serif;
+            font-family: 'Cormorant Garamond', 'Times New Roman', serif;
             background: #cfc5b6;
             overflow-x: hidden;
             position: relative;
@@ -71,6 +73,30 @@
             border-radius: 50%;
             margin: 0 auto;
             animation: spin 1s linear infinite;
+        }
+        
+        .preloader-status {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #5b4e3f;
+            font-family: 'Cormorant Garamond', serif;
+        }
+        
+        .preloader-progress {
+            width: 250px;
+            height: 4px;
+            background: rgba(59, 94, 75, 0.2);
+            border-radius: 2px;
+            margin: 1rem auto 0;
+            overflow: hidden;
+        }
+        
+        .preloader-progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #3b5e4b;
+            border-radius: 2px;
+            transition: width 0.3s ease;
         }
         
         @keyframes heartbeat {
@@ -208,7 +234,7 @@
             filter: drop-shadow(0 8px 25px rgba(0,0,0,0.3));
         }
         
-        /* Десктопная страница с QR-кодом - АБСОЛЮТНЫЙ ЦЕНТР */
+        /* Десктопная страница с QR-кодом */
         .desktop-page {
             display: none;
             position: fixed;
@@ -232,7 +258,7 @@
             background: rgba(255, 250, 240, 0.4);
             backdrop-filter: blur(8px);
             padding: 2.5rem 2rem;
-            border-radius: 60px 60px 60px 60px;
+            border-radius: 60px;
             border: 1px solid rgba(200, 180, 160, 0.3);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             text-align: center;
@@ -282,32 +308,16 @@
             margin: 1.5rem 0 1rem;
             line-height: 1.5;
         }
-        
-        .qr-link {
-            display: inline-block;
-            margin-top: 0.5rem;
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.1rem;
-            color: #3b5e4b;
-            text-decoration: none;
-            border-bottom: 1px dashed #b8aa99;
-            padding-bottom: 0.2rem;
-            transition: all 0.3s ease;
-        }
-        
-        .qr-link:hover {
-            color: #1a2e24;
-            border-bottom-color: #3b5e4b;
-        }
     </style>
 </head>
 <body>
     <!-- Прелоадер -->
     <div class="preloader" id="preloader">
         <div class="preloader-content">
-            <div class="preloader-heart">❤️</div>
+            <div class="preloader-heart">♥️</div>
             <div class="preloader-text">Готовим сюрприз...</div>
             <div class="preloader-spinner"></div>
+            </div>
         </div>
     </div>
 
@@ -325,7 +335,7 @@
         </div>
     </div>
 
-    <!-- Десктопная страница с QR-кодом - АБСОЛЮТНО ПО ЦЕНТРУ -->
+    <!-- Десктопная страница с QR-кодом -->
     <div class="desktop-page" id="desktopPage">
         <div class="qr-container">
             <div class="qr-title">Александр & Софья</div>
@@ -338,56 +348,214 @@
             <div class="qr-note">
                 Наведите камеру телефона на QR-код и увидите сюрприз!<br>
             </div>
-            
         </div>
     </div>
     
     <script>
-        // Определяем мобильное устройство
+        // ВСЕ медиафайлы для ОБЕИХ страниц
+        const allMediaFiles = [
+            // index.html
+            { url: './couple-photo.jpg', type: 'image' },
+            { url: './paper-texture.png', type: 'image' },
+            { url: './envelope.png', type: 'image' },
+            { url: './QR.png', type: 'image' },
+            // wedding-page.html - все изображения
+            { url: './couple-photo1.jpg', type: 'image' },
+            { url: './couple-photo2.jpg', type: 'image' },
+            { url: './paper-texture2.png', type: 'image' },
+            { url: './rings.png', type: 'image' },
+            { url: './ZAGS.jpg', type: 'image' },
+            { url: './cafe.jpg', type: 'image' },
+            { url: './house.jpg', type: 'image' },
+            // аудио
+            { url: './wedding-music.mp3', type: 'audio' }
+        ];
+        
+        let loadedCount = 0;
+        let totalCount = allMediaFiles.length;
+        const statusElement = document.getElementById('loadingStatus');
+        const progressBar = document.getElementById('progressBar');
+        
+        // Сохраняем предварительно инициализированное аудио в глобальную переменную
+        let preloadedAudio = null;
+        
+        function updateProgress(url) {
+            loadedCount++;
+            const percent = (loadedCount / totalCount) * 100;
+            if (progressBar) {
+                progressBar.style.width = percent + '%';
+            }
+            if (statusElement) {
+                const fileName = url ? url.split('/').pop() : 'файл';
+                statusElement.innerHTML = `Загружено: ${loadedCount}/${totalCount}<br><span style="font-size:0.8rem;">${fileName}</span>`;
+            }
+        }
+        
+        function loadAllMedia() {
+            return new Promise((resolve) => {
+                if (totalCount === 0) {
+                    resolve();
+                    return;
+                }
+                
+                let resolved = false;
+                
+                allMediaFiles.forEach(file => {
+                    if (file.type === 'image') {
+                        const img = new Image();
+                        img.onload = () => {
+                            updateProgress(file.url);
+                            checkComplete();
+                        };
+                        img.onerror = () => {
+                            console.warn(`Не удалось загрузить: ${file.url}`);
+                            updateProgress(file.url);
+                            checkComplete();
+                        };
+                        img.src = file.url;
+                    } else if (file.type === 'audio') {
+                        // СОЗДАЕМ И ИНИЦИАЛИЗИРУЕМ АУДИО ЗАРАНЕЕ
+                        const audio = new Audio();
+                        audio.preload = 'auto';
+                        audio.src = file.url;
+                        
+                        // Важно: загружаем аудио и декодируем его
+                        audio.load();
+                        
+                        let completed = false;
+                        const onComplete = () => {
+                            if (!completed) {
+                                completed = true;
+                                // Сохраняем аудио для использования на второй странице
+                                if (!preloadedAudio) {
+                                    preloadedAudio = audio;
+                                    // Делаем аудио доступным глобально
+                                    window.preloadedWeddingAudio = audio;
+                                }
+                                updateProgress(file.url);
+                                checkComplete();
+                            }
+                        };
+                        
+                        audio.addEventListener('canplaythrough', onComplete);
+                        audio.addEventListener('loadeddata', onComplete);
+                        audio.addEventListener('error', () => {
+                            console.warn(`Не удалось загрузить аудио: ${file.url}`);
+                            onComplete();
+                        });
+                        
+                        // Таймаут
+                        setTimeout(() => {
+                            if (!completed) {
+                                console.warn(`Таймаут аудио: ${file.url}`);
+                                onComplete();
+                            }
+                        }, 8000);
+                    }
+                });
+                
+                function checkComplete() {
+                    if (loadedCount >= totalCount && !resolved) {
+                        resolved = true;
+                        if (statusElement) {
+                            statusElement.innerHTML = 'Готово! ✨ Все материалы загружены';
+                        }
+                        setTimeout(resolve, 300);
+                    }
+                }
+                
+                // Максимальный таймаут
+                setTimeout(() => {
+                    if (!resolved) {
+                        console.warn(`Таймаут: загружено ${loadedCount} из ${totalCount}`);
+                        resolve();
+                    }
+                }, 15000);
+            });
+        }
+        
         function isMobile() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
         }
-
-        // Показываем прелоадер, ждём загрузки всех ресурсов
-        window.addEventListener('load', function() {
-            // Задержка для красоты (минимум 1.5 секунды)
-            setTimeout(function() {
+        
+        let contentShown = false;
+        
+        async function initializeSite() {
+            try {
+                // Ждем загрузки ВСЕХ медиафайлов с декодированием
+                await loadAllMedia();
+                
+                if (contentShown) return;
+                contentShown = true;
+                
                 const preloader = document.getElementById('preloader');
                 preloader.classList.add('preloader-hidden');
                 
-                // Показываем контент
                 if (isMobile()) {
-                    // Мобильное устройство - показываем индекс
                     document.getElementById('mainContent').classList.add('container-visible');
                 } else {
-                    // Десктоп - показываем страницу с QR
                     document.getElementById('desktopPage').classList.add('active');
                 }
-            }, 1500);
-        });
-
-        // Переход на свадебную страницу по клику на конверт
-        document.getElementById('envelope').addEventListener('click', function() {
-            this.style.transform = 'translateX(-50%) scale(1.05)';
-            this.style.transition = 'transform 0.3s ease';
-            
-            setTimeout(function() {
-                window.location.href = 'wedding-page.html';
-            }, 300);
-        });
+                
+                setTimeout(() => {
+                    if (preloader && preloader.parentNode) {
+                        preloader.style.display = 'none';
+                    }
+                }, 800);
+                
+            } catch (error) {
+                console.error('Ошибка:', error);
+                if (!contentShown) {
+                    contentShown = true;
+                    const preloader = document.getElementById('preloader');
+                    preloader.classList.add('preloader-hidden');
+                    if (isMobile()) {
+                        document.getElementById('mainContent').classList.add('container-visible');
+                    } else {
+                        document.getElementById('desktopPage').classList.add('active');
+                    }
+                }
+            }
+        }
         
-        const envelope = document.getElementById('envelope');
-        const instruction = document.querySelector('.envelope-instruction');
+        if (document.readyState === 'complete') {
+            initializeSite();
+        } else {
+            window.addEventListener('load', initializeSite);
+        }
         
-        envelope.addEventListener('mouseenter', function() {
-            instruction.style.opacity = '1';
-            instruction.style.letterSpacing = '1px';
-        });
+        // Страховка
+        setTimeout(() => {
+            if (!contentShown) {
+                contentShown = true;
+                const preloader = document.getElementById('preloader');
+                if (preloader) preloader.classList.add('preloader-hidden');
+                if (isMobile()) {
+                    const mc = document.getElementById('mainContent');
+                    if (mc) mc.classList.add('container-visible');
+                } else {
+                    const dp = document.getElementById('desktopPage');
+                    if (dp) dp.classList.add('active');
+                }
+            }
+        }, 12000);
         
-        envelope.addEventListener('mouseleave', function() {
-            instruction.style.opacity = '0.95';
-            instruction.style.letterSpacing = '0.8px';
-        });
+        // Переход на свадебную страницу
+        const envelopeElement = document.getElementById('envelope');
+        if (envelopeElement) {
+            envelopeElement.addEventListener('click', function() {
+                // Сохраняем предзагруженное аудио в sessionStorage для передачи на следующую страницу
+                if (window.preloadedWeddingAudio) {
+                    // Аудио уже готово, просто переходим
+                    console.log('Аудио предзагружено, переходим');
+                }
+                this.style.transform = 'translateX(-50%) scale(1.05)';
+                this.style.transition = 'transform 0.3s ease';
+                setTimeout(() => {
+                    window.location.href = 'wedding-page.html';
+                }, 300);
+            });
+        }
     </script>
 </body>
 </html>
